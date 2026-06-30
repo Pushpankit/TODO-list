@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TODO List</title>
+
+    <style>
+.new-task-box{
+   width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+.new-task-box input{
+max-width: 293px;
+    width: 100%;
+    font-size: 20px;
+    padding: 10px;
+    border-radius: 10px;
+}
+.new-task-box button{
+   max-width: 88px;
+    width: 100%;
+    padding: 7px;
+    border-radius: 10px;
+    border: transparent;
+    background: #47a747;
+    font-size: 14px;
+    font-weight: 600;
+}
+.list-box{
+  display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.red-btn{
+    max-width: 88px;
+    width: 100%;
+    padding: 7px;
+    border: transparent;
+    background: #b80b0b;
+    font-size: 14px;
+    font-weight: 500;
+    color: white;
+}
+.list-conatiner{
+ overflow-y: scroll;
+    height: 80vh;
+    scrollbar-width: none;
+}
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+
+  <script
+    crossorigin
+    src="https://unpkg.com/react@18/umd/react.development.js"
+  ></script>
+
+  <script
+    crossorigin
+    src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+  ></script>
+
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/supersimpledev/dayjs.js"></script>
+  <script src="https://www.w3schools.com/js/js_dates.asp"></script>
+
+  <script type="text/babel">
+    function TaskInput({ array, setArray }) {
+      const [inputText, setInputText] = React.useState("");
+
+      function saveInputText(event) {
+        setInputText(event.target.value);
+      }
+
+      function addTask() {
+
+
+        const date = new Date();
+
+        function capitalizeFirstLetter(str) {
+   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+       if (inputText.trim() !== "") {
+          setArray([
+            
+            {
+              task: capitalizeFirstLetter(inputText),
+              date: date.toLocaleDateString(),
+              id: crypto.randomUUID(),
+            },...array
+          ]);
+          setInputText("");
+        } else alert("Enter text");
+      }
+
+      function keyDown(event) {
+        if (event.key == "Enter") {
+          addTask();
+        }
+      }
+
+      return (
+        <div className='new-task-box'>
+          <input
+            placeholder="Enter task"
+            onChange={saveInputText}
+            onKeyDown={keyDown}
+            value={inputText}
+          />
+          <button onClick={addTask}>Add Task</button>
+        </div>
+      );
+    }
+
+    function TaskCard({ item, setArray, array }) {
+      function delTask() {
+        setArray(
+          array.filter((task) => {
+            return task.id !== item.id;
+          }),
+        );
+      }
+      return (
+        <div className='list-box'>
+          <h1>{item.task}</h1>
+          <h3>{item.date}</h3>
+          <button className='red-btn' onClick={delTask}>Delete</button>
+        </div>
+      );
+    }
+
+    function TaskBox({ array, setArray }) {
+      return (
+        <div className='list-conatiner'>
+          {array.map((item) => (
+            <TaskCard
+              key={item.id}
+              item={item}
+              setArray={setArray}
+              array={array}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    function App() {
+      const [array, setArray] = React.useState([]);
+
+      return (
+        <>
+          <TaskInput array={array} setArray={setArray} />
+          <TaskBox array={array} setArray={setArray} />
+        </>
+      );
+    }
+
+    const element = document.querySelector("#root");
+    ReactDOM.createRoot(element).render(<App />);
+  </script>
+</html>
